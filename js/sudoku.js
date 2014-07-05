@@ -166,7 +166,7 @@
 				}
 				answerContainer.find(".sdk-btn").click(function () {
 					//only listen to clicks if it is shown
-					if (!$(this).hasClass("sdk-no-show")) {
+					if (!$(this).hasClass("sdk-no-show") && defaults.selected != null && defaults.selected.children().length == 0 ) {
 						//check if it is the answer
 						if ( defaults.selectedSolution == parseInt($(this).text()) ) {
 							//decrease answer tracker
