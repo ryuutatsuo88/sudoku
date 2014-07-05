@@ -6,7 +6,7 @@
 		return this.each(function() {  
 			var settings = {
 				levels : [
-					{level: "Easy", numbers: 40},
+					{level: "Easy", numbers: 70},
 					{level: "Medium", numbers: 30},
 					{level: "Hard", numbers: 20}
 				]
@@ -17,7 +17,20 @@
 				domMatrix : [],
 				numOfRows : 9,
 				numOfCols : 9,
-				level : 40
+				level : 40,
+				selected : null,
+				selectedSolution : null,
+				anwerTracker : {
+					"1" : 9,
+					"2" : 9,
+					"3" : 9,
+					"4" : 9,
+					"5" : 9,
+					"6" : 9,
+					"7" : 9,
+					"8" : 9,
+					"9" : 9
+				}
 			}
       		if ( options ) {
       			$.extend( settings, options );
@@ -102,31 +115,76 @@
 				//add table to screen
 				$this.append(defaults.table);
 				
+				//populate table with random number depending on the level difficulty 
 				var items = defaults.level;
 				while (items > 0) {
 					var row = Math.floor(Math.random() * (8 - 0 + 1)) + 0;
 					var col = Math.floor(Math.random() * (8 - 0 + 1)) + 0;
 					if (defaults.domMatrix[row][col].children().length == 0) {
 						defaults.domMatrix[row][col].append("<div class='sdk-solution'>"+ defaults.matrix[row][col] +"</div>");
+						defaults.anwerTracker[defaults.matrix[row][col].toString()]--;
 						items--;
 					}
 				}
-				
 				//click even when clicking on cells
 				defaults.table.find(".sdk-col").click(function () {
 					//remove any helper styling
 					$this.find(".sdk-solution").removeClass("sdk-helper");
+					$this.find(".sdk-col").removeClass("sdk-selected");
 					if ($(this).children().length == 0) {
 						//select this 
+						defaults.domMatrix[$(this).attr("data-row")][$(this).attr("data-col")].addClass("sdk-selected");
+						defaults.selected = defaults.domMatrix[$(this).attr("data-row")][$(this).attr("data-col")];
+						defaults.selectedSolution = defaults.matrix[$(this).attr("data-row")][$(this).attr("data-col")]
 					} else {
 						//add helper style
 						$this.highlightHelp(parseInt($(this).text()));
 					}
 				});
+				
+				//add answers choices to screen
+				$this.answerPicker();
+								
 				//remove the no show class to do a small fadein animation with css
 				setTimeout(function () {
 					defaults.table.removeClass("sdk-no-show");
 				}, 300);
+			};
+			
+			//add answer picker to screen
+			$this.answerPicker = function() {
+				//make a answer container 
+				var answerContainer = $("<div class='sdk-ans-container'></div>");
+				//add answer buttons to container
+				for (var a in defaults.anwerTracker) {
+					//check if need to show button else we add it for space reason but dont pick up clicks from it
+					if (defaults.anwerTracker[a] > 0) {
+						answerContainer.append("<div class='sdk-btn'>"+a+"</div>");
+					} else {
+						answerContainer.append("<div class='sdk-btn sdk-no-show'>"+a+"</div>");
+					}
+				}
+				answerContainer.find(".sdk-btn").click(function () {
+					//only listen to clicks if it is shown
+					if (!$(this).hasClass("sdk-no-show")) {
+						//check if it is the answer
+						if ( defaults.selectedSolution == parseInt($(this).text()) ) {
+							//decrease answer tracker
+							defaults.anwerTracker[$(this).text()]--;
+							//if answer tracker is 0 hide that button
+							if (defaults.anwerTracker[$(this).text()] == 0) {
+								$(this).addClass("sdk-no-show");
+							}
+							//remove highlighter
+							$this.find(".sdk-col").removeClass("sdk-selected");
+							//add the answer to screen
+							defaults.selected.append("<div class='sdk-solution'>"+ defaults.selectedSolution +"</div>");
+						}
+						
+					}
+				});
+				$this.append(answerContainer);
+				
 			};
 			
 			//add highlight help

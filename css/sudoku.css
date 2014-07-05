@@ -101,6 +101,10 @@ html, body {
 	border-top: none;
 }
 
+.sdk-selected {
+	background-color: #4E7180;
+}
+
 .sdk-solution {
 	padding: 4px;
 	text-align: center;
@@ -148,6 +152,20 @@ html, body {
 	background: #d94040;
 }
 
+.sdk-ans-container {
+	max-width: 416px;
+	margin: auto;
+	margin-top: 10px;
+	display: block;
+  	position: relative;
+}
+
+.sdk-ans-container .sdk-btn {
+	display:inline-block;
+	width: 11.11%;
+	padding: 5px;
+}
+
 .sdk-no-show {
 	opacity: 0;
 }
@@ -157,7 +175,8 @@ html, body {
 		background-size: 300px;
 	}
 	
-	.sdk-table {
+	.sdk-table,
+	.sdk-ans-container .sdk-btn  {
 		font-size: 1.5em;
 	}
 	
